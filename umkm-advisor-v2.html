@@ -1,0 +1,1794 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Warung Pintar — AI Advisory Board</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Syne:wght@400;500;600;700;800&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --void:     #03050a;
+  --deep:     #060a12;
+  --surface:  #0a1020;
+  --surface2: #0f1828;
+  --surface3: #141f32;
+  --rim:      #1a2840;
+  --rim2:     #223050;
+  --amber:    #e8a020;
+  --amber2:   #f5c050;
+  --amber-lo: #3d2a08;
+  --ember:    #ff6030;
+  --teal:     #20c8a0;
+  --sky:      #4090e8;
+  --violet:   #9060e8;
+  --text:     #c8d8f0;
+  --text-mid: #607090;
+  --text-dim: #2a3a52;
+  --cream:    #f0e8d0;
+  --white:    #e8f0ff;
+}
+
+*, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+
+html, body {
+  height: 100%;
+  background: var(--void);
+  color: var(--text);
+  font-family: 'Syne', sans-serif;
+  overflow: hidden;
+}
+
+/* ══════════════════════════════════════
+   CANVAS PARTICLES
+══════════════════════════════════════ */
+#particleCanvas {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* ══════════════════════════════════════
+   SCREENS
+══════════════════════════════════════ */
+.screen {
+  position: fixed;
+  inset: 0;
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.6s ease;
+}
+.screen.active {
+  opacity: 1;
+  pointer-events: all;
+}
+
+/* ══════════════════════════════════════
+   SCREEN 1 — ONBOARDING
+══════════════════════════════════════ */
+#screenOnboard {
+  flex-direction: row;
+}
+
+/* LEFT — Brand / Manifesto */
+.onboard-left {
+  width: 46%;
+  background: linear-gradient(160deg, #060e1e 0%, #03050a 60%);
+  border-right: 1px solid var(--rim);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 60px 56px;
+  position: relative;
+  overflow: hidden;
+}
+
+.onboard-left::before {
+  content: '';
+  position: absolute;
+  top: -100px; left: -100px;
+  width: 500px; height: 500px;
+  background: radial-gradient(circle, rgba(232,160,32,0.08) 0%, transparent 65%);
+  pointer-events: none;
+}
+.onboard-left::after {
+  content: '';
+  position: absolute;
+  bottom: 0; right: 0;
+  width: 300px; height: 300px;
+  background: radial-gradient(circle, rgba(64,144,232,0.06) 0%, transparent 65%);
+  pointer-events: none;
+}
+
+.brand-mark {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 64px;
+}
+.brand-hex {
+  width: 44px; height: 44px;
+  position: relative;
+  display: flex; align-items: center; justify-content: center;
+}
+.brand-hex::before {
+  content: '⬡';
+  font-size: 44px;
+  color: var(--amber);
+  position: absolute;
+  line-height: 1;
+  opacity: 0.3;
+}
+.brand-hex-inner {
+  font-size: 18px;
+  position: relative;
+  z-index: 1;
+}
+.brand-wordmark {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--cream);
+  letter-spacing: 0.02em;
+}
+.brand-tagline {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px;
+  color: var(--amber);
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  margin-top: 2px;
+  opacity: 0.7;
+}
+
+.manifesto-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 52px;
+  font-weight: 700;
+  line-height: 1.1;
+  color: var(--white);
+  margin-bottom: 24px;
+}
+.manifesto-title em {
+  font-style: italic;
+  color: var(--amber2);
+}
+
+.manifesto-body {
+  font-size: 14px;
+  line-height: 1.8;
+  color: var(--text-mid);
+  max-width: 360px;
+  margin-bottom: 48px;
+}
+
+.advisor-pills {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.advisor-pill {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 16px;
+  background: rgba(255,255,255,0.02);
+  border: 1px solid var(--rim);
+  border-radius: 8px;
+  transition: border-color 0.2s;
+}
+.advisor-pill:hover { border-color: var(--rim2); }
+.pill-dot {
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+.pill-name {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text);
+  flex: 1;
+}
+.pill-role {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px;
+  color: var(--text-dim);
+  letter-spacing: 0.05em;
+}
+
+/* RIGHT — Profile Form */
+.onboard-right {
+  flex: 1;
+  background: var(--deep);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 60px 56px;
+  position: relative;
+  overflow-y: auto;
+}
+
+.form-header {
+  margin-bottom: 40px;
+}
+.form-eyebrow {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  color: var(--amber);
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  margin-bottom: 10px;
+  opacity: 0.8;
+}
+.form-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 34px;
+  font-weight: 600;
+  color: var(--white);
+  line-height: 1.2;
+}
+.form-title em { font-style: italic; color: var(--amber2); }
+
+.form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+.form-full { grid-column: 1 / -1; }
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+.field label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9.5px;
+  color: var(--text-mid);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+.field input, .field select, .field textarea {
+  background: var(--surface);
+  border: 1px solid var(--rim);
+  border-radius: 8px;
+  padding: 12px 14px;
+  font-family: 'Syne', sans-serif;
+  font-size: 13px;
+  color: var(--text);
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  width: 100%;
+  -webkit-appearance: none;
+}
+.field select {
+  cursor: pointer;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23607090' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 14px center;
+  padding-right: 36px;
+}
+.field select option { background: var(--surface2); }
+.field textarea { resize: none; font-size: 13px; line-height: 1.6; }
+.field input:focus, .field select:focus, .field textarea:focus {
+  border-color: var(--amber-lo);
+  box-shadow: 0 0 0 3px rgba(232,160,32,0.07);
+}
+.field input::placeholder, .field textarea::placeholder { color: var(--text-dim); }
+
+.api-field {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: var(--surface);
+  border: 1px solid var(--rim);
+  border-radius: 8px;
+  padding: 4px 4px 4px 14px;
+  transition: border-color 0.2s;
+}
+.api-field:focus-within { border-color: var(--amber-lo); }
+.api-field input {
+  background: none; border: none; padding: 8px 0;
+  flex: 1; font-family: 'JetBrains Mono', monospace; font-size: 11px;
+  color: var(--text); outline: none;
+}
+.api-field input::placeholder { color: var(--text-dim); }
+.api-status {
+  width: 28px; height: 28px;
+  border-radius: 6px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 12px;
+  flex-shrink: 0;
+  background: var(--surface2);
+  color: var(--text-dim);
+  transition: all 0.2s;
+}
+.api-status.valid { background: rgba(32,200,160,0.15); color: var(--teal); }
+.api-status.invalid { background: rgba(255,96,48,0.1); color: var(--ember); }
+
+.groq-hint {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px;
+  color: var(--text-dim);
+  margin-top: 6px;
+}
+.groq-hint a { color: var(--amber); opacity: 0.6; }
+
+.btn-enter {
+  width: 100%;
+  margin-top: 28px;
+  padding: 16px;
+  background: linear-gradient(135deg, #c88010 0%, #e8a020 50%, #f5c050 100%);
+  border: none;
+  border-radius: 10px;
+  font-family: 'Syne', sans-serif;
+  font-size: 14px;
+  font-weight: 700;
+  color: #000;
+  cursor: pointer;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  transition: all 0.25s;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 4px 24px rgba(232,160,32,0.25);
+}
+.btn-enter::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, transparent 40%, rgba(255,255,255,0.15));
+  pointer-events: none;
+}
+.btn-enter:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 36px rgba(232,160,32,0.4);
+}
+.btn-enter:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
+
+/* ══════════════════════════════════════
+   SCREEN 2 — MAIN ADVISORY
+══════════════════════════════════════ */
+#screenMain {
+  flex-direction: column;
+}
+
+/* TOPBAR */
+.topbar {
+  height: 54px;
+  background: var(--deep);
+  border-bottom: 1px solid var(--rim);
+  display: flex;
+  align-items: center;
+  padding: 0 24px;
+  gap: 20px;
+  flex-shrink: 0;
+  position: relative;
+  z-index: 20;
+}
+.topbar::after {
+  content: '';
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent 0%, var(--amber-lo) 30%, var(--amber-lo) 70%, transparent);
+  opacity: 0.6;
+}
+
+.tb-brand {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--cream);
+  display: flex; align-items: center; gap: 8px;
+}
+.tb-brand span { color: var(--amber); }
+
+.tb-profile {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 14px;
+  background: var(--surface);
+  border: 1px solid var(--rim);
+  border-radius: 20px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  color: var(--text-mid);
+}
+.tb-profile-name { color: var(--amber2); font-weight: 500; }
+
+.tb-spacer { flex: 1; }
+
+.tb-model {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px;
+  color: var(--text-dim);
+  letter-spacing: 0.1em;
+}
+
+.live-pill {
+  display: flex; align-items: center; gap: 7px;
+  padding: 5px 14px;
+  border-radius: 20px;
+  border: 1px solid rgba(232,90,50,0.3);
+  background: rgba(232,90,50,0.06);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px;
+  font-weight: 500;
+  color: var(--ember);
+  letter-spacing: 0.1em;
+  transition: all 0.3s;
+}
+.live-pill.on {
+  border-color: rgba(232,90,50,0.6);
+  background: rgba(232,90,50,0.12);
+  box-shadow: 0 0 16px rgba(232,90,50,0.15);
+}
+.live-dot {
+  width: 6px; height: 6px; border-radius: 50%;
+  background: #444; transition: all 0.3s;
+}
+.live-dot.on { background: var(--ember); animation: blink 1.1s infinite; }
+@keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.2} }
+
+/* WORKSPACE */
+.workspace {
+  flex: 1;
+  display: grid;
+  grid-template-columns: 300px 1fr 280px;
+  overflow: hidden;
+  min-height: 0;
+}
+
+/* LEFT — Advisors */
+.panel-advisors {
+  background: var(--deep);
+  border-right: 1px solid var(--rim);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.panel-head {
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--rim);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 8.5px;
+  letter-spacing: 0.2em;
+  color: var(--text-dim);
+  text-transform: uppercase;
+  display: flex; align-items: center; gap: 10px;
+}
+.panel-head::before {
+  content: '';
+  width: 20px; height: 1px;
+  background: var(--amber);
+  opacity: 0.5;
+}
+
+/* Visual scene */
+.scene-wrap {
+  flex: 1;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  min-height: 0;
+}
+.scene-bg {
+  position: absolute; inset: 0;
+  background:
+    radial-gradient(ellipse 80% 60% at 50% 40%, rgba(232,160,32,0.06) 0%, transparent 65%),
+    radial-gradient(ellipse 60% 40% at 50% 80%, rgba(64,144,232,0.04) 0%, transparent 60%);
+}
+.scene-svg { width: 100%; max-height: 100%; }
+
+/* Advisor rows */
+.adv-rows {
+  border-top: 1px solid var(--rim);
+  padding: 8px;
+  overflow-y: auto;
+  max-height: 220px;
+}
+.adv-rows::-webkit-scrollbar { width: 3px; }
+.adv-rows::-webkit-scrollbar-thumb { background: var(--rim2); }
+
+.adv-item {
+  display: flex; align-items: center; gap: 10px;
+  padding: 8px 10px;
+  border-radius: 8px;
+  border: 1px solid transparent;
+  transition: all 0.25s;
+  cursor: default;
+}
+.adv-item.speaking {
+  border-color: rgba(232,160,32,0.2);
+  background: rgba(232,160,32,0.04);
+}
+.adv-item-dot {
+  width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0;
+}
+.adv-item.speaking .adv-item-dot { animation: blink 0.8s infinite; }
+.adv-av {
+  width: 32px; height: 32px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px; font-weight: 500; color: #000; flex-shrink: 0;
+  position: relative;
+}
+.adv-av-ring {
+  position: absolute; inset: -2px;
+  border-radius: 50%;
+  border: 1.5px solid transparent;
+  transition: border-color 0.3s, box-shadow 0.3s;
+}
+.adv-item.speaking .adv-av-ring {
+  animation: ringPulse 1.5s infinite;
+}
+@keyframes ringPulse {
+  0%,100% { opacity: 0.6; transform: scale(1); }
+  50% { opacity: 1; transform: scale(1.08); }
+}
+.adv-info { flex: 1; min-width: 0; }
+.adv-item-name { font-size: 12.5px; font-weight: 600; color: var(--text); }
+.adv-item-role {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px; color: var(--text-dim); margin-top: 1px;
+}
+.adv-item-status {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px; color: var(--text-dim);
+  transition: color 0.3s;
+}
+.adv-item-status.on { color: var(--amber2); }
+
+/* CENTER — Chat */
+.panel-chat {
+  display: flex; flex-direction: column; overflow: hidden;
+  background: var(--void);
+  position: relative;
+}
+
+.chat-topbar {
+  padding: 10px 22px;
+  border-bottom: 1px solid var(--rim);
+  background: var(--deep);
+  display: flex; align-items: center; justify-content: space-between;
+  flex-shrink: 0;
+}
+.chat-topic-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9.5px; color: var(--text-dim); letter-spacing: 0.08em;
+}
+.chat-topic-label span {
+  font-family: 'Cormorant Garamond', serif;
+  font-style: italic; font-size: 13px;
+  color: var(--amber2); letter-spacing: 0;
+}
+
+.chat-feed {
+  flex: 1; overflow-y: auto;
+  padding: 20px 24px;
+  display: flex; flex-direction: column; gap: 18px;
+  scroll-behavior: smooth;
+}
+.chat-feed::-webkit-scrollbar { width: 4px; }
+.chat-feed::-webkit-scrollbar-thumb { background: var(--rim); border-radius: 2px; }
+
+/* Empty */
+.empty-state {
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  height: 100%; gap: 20px; text-align: center; padding: 48px;
+}
+.empty-glyphs {
+  display: flex; gap: 14px;
+}
+.eg {
+  width: 42px; height: 42px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px; font-weight: 500; color: #000;
+  opacity: 0.15;
+  animation: egFloat 3s infinite;
+}
+.eg:nth-child(2) { animation-delay: 0.4s; }
+.eg:nth-child(3) { animation-delay: 0.8s; }
+.eg:nth-child(4) { animation-delay: 1.2s; }
+.eg:nth-child(5) { animation-delay: 1.6s; }
+@keyframes egFloat {
+  0%,100% { transform: translateY(0); opacity: 0.15; }
+  50% { transform: translateY(-6px); opacity: 0.28; }
+}
+.empty-t1 {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 24px; font-weight: 600;
+  color: var(--text-mid); margin-top: 8px;
+}
+.empty-t2 {
+  font-size: 13px; color: var(--text-dim);
+  line-height: 1.75; max-width: 320px;
+}
+
+/* Messages */
+.msg {
+  display: flex; gap: 13px;
+  animation: msgIn 0.45s cubic-bezier(0.16,1,0.3,1) forwards;
+  opacity: 0; transform: translateY(12px);
+}
+@keyframes msgIn { to { opacity:1; transform:translateY(0); } }
+.msg-av-wrap {
+  display: flex; flex-direction: column; align-items: center; gap: 4px;
+}
+.msg-av {
+  width: 38px; height: 38px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px; font-weight: 500; color: #000; flex-shrink: 0;
+}
+.msg-body { flex: 1; min-width: 0; }
+.msg-meta {
+  display: flex; align-items: baseline; gap: 8px; margin-bottom: 7px;
+}
+.msg-name {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 15px; font-weight: 700; font-style: italic;
+}
+.msg-role { font-family: 'JetBrains Mono', monospace; font-size: 9px; color: var(--text-dim); }
+.msg-time { font-family: 'JetBrains Mono', monospace; font-size: 9px; color: var(--text-dim); margin-left: auto; }
+.msg-bubble {
+  background: var(--surface2);
+  border: 1px solid var(--rim);
+  border-left: 2px solid;
+  border-radius: 2px 12px 12px 12px;
+  padding: 12px 16px;
+  font-size: 13.5px; line-height: 1.72; color: var(--text);
+  position: relative;
+}
+
+/* Typing */
+.typing-msg { display: flex; gap: 13px; align-items: flex-start; }
+.typing-bubble {
+  background: var(--surface2); border: 1px solid var(--rim);
+  border-radius: 2px 12px 12px 12px;
+  padding: 14px 18px; display: flex; gap: 5px; align-items: center;
+}
+.t-dot {
+  width: 5px; height: 5px; border-radius: 50%;
+  animation: td 1.1s infinite;
+}
+.t-dot:nth-child(2) { animation-delay: 0.18s; }
+.t-dot:nth-child(3) { animation-delay: 0.36s; }
+@keyframes td {
+  0%,80%,100% { transform:scale(0.5); opacity:0.3; }
+  40% { transform:scale(1); opacity:1; }
+}
+.typing-lbl {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px; color: var(--text-dim); font-style: italic;
+  align-self: center; margin-left: 10px;
+}
+
+/* Sys msg */
+.sys-msg {
+  display: flex; align-items: center; gap: 12px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px; color: var(--text-dim);
+  letter-spacing: 0.14em; text-transform: uppercase;
+}
+.sys-msg::before,.sys-msg::after {
+  content:''; flex:1; height:1px; background: var(--rim);
+}
+.sys-msg.hl { color: var(--amber); }
+.sys-msg.hl::before,.sys-msg.hl::after {
+  background: linear-gradient(90deg, transparent, var(--amber-lo));
+}
+
+/* Bottom Input */
+.chat-bottom {
+  border-top: 1px solid var(--rim);
+  background: var(--deep);
+  padding: 14px 20px;
+  flex-shrink: 0;
+}
+
+.presets-scroll {
+  display: flex; gap: 7px; overflow-x: auto;
+  padding-bottom: 10px; margin-bottom: 10px;
+  scrollbar-width: none;
+}
+.presets-scroll::-webkit-scrollbar { display: none; }
+.preset-chip {
+  background: var(--surface);
+  border: 1px solid var(--rim);
+  border-radius: 20px;
+  padding: 5px 14px;
+  font-family: 'Syne', sans-serif;
+  font-size: 11.5px; color: var(--text-mid);
+  cursor: pointer; white-space: nowrap;
+  transition: all 0.2s; flex-shrink: 0;
+}
+.preset-chip:hover {
+  border-color: var(--amber-lo);
+  color: var(--amber2);
+  background: rgba(232,160,32,0.05);
+}
+
+.input-bar {
+  display: flex; gap: 10px; align-items: center;
+}
+.main-input {
+  flex: 1;
+  background: var(--surface);
+  border: 1px solid var(--rim);
+  border-radius: 10px;
+  padding: 12px 16px;
+  font-family: 'Syne', sans-serif;
+  font-size: 13px; color: var(--text);
+  outline: none; transition: border-color 0.2s;
+}
+.main-input:focus { border-color: var(--amber-lo); }
+.main-input::placeholder { color: var(--text-dim); }
+
+.btn-consult {
+  padding: 12px 22px;
+  background: linear-gradient(135deg, #c88010, #e8a020);
+  border: none; border-radius: 10px;
+  font-family: 'Syne', sans-serif;
+  font-size: 12px; font-weight: 700; color: #000;
+  cursor: pointer; letter-spacing: 0.06em; text-transform: uppercase;
+  transition: all 0.2s; white-space: nowrap;
+  box-shadow: 0 2px 16px rgba(232,160,32,0.2);
+}
+.btn-consult:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 5px 24px rgba(232,160,32,0.35);
+}
+.btn-consult:disabled { opacity: 0.45; cursor: not-allowed; transform: none; }
+
+/* RIGHT — Output Panel */
+.panel-output {
+  background: var(--deep);
+  border-left: 1px solid var(--rim);
+  display: flex; flex-direction: column; overflow: hidden;
+}
+
+.output-empty {
+  flex: 1; display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  gap: 12px; text-align: center; padding: 32px;
+  color: var(--text-dim);
+}
+.output-empty-icon { font-size: 28px; opacity: 0.3; margin-bottom: 4px; }
+.output-empty-t { font-size: 12px; line-height: 1.65; }
+
+/* Output Result */
+.output-result {
+  flex: 1; overflow-y: auto; display: none; flex-direction: column;
+}
+.output-result.show { display: flex; }
+.output-result::-webkit-scrollbar { width: 3px; }
+.output-result::-webkit-scrollbar-thumb { background: var(--rim2); }
+
+.out-section {
+  padding: 16px;
+  border-bottom: 1px solid var(--rim);
+}
+.out-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 8px; letter-spacing: 0.2em;
+  color: var(--text-dim); text-transform: uppercase;
+  margin-bottom: 10px;
+  display: flex; align-items: center; gap: 8px;
+}
+.out-label::before { content:''; width:14px; height:1px; background:var(--amber); opacity:0.4; }
+
+/* Action Plan */
+.action-plan { display: flex; flex-direction: column; gap: 8px; }
+.action-item {
+  display: flex; gap: 10px; align-items: flex-start;
+  padding: 10px 12px;
+  background: var(--surface);
+  border: 1px solid var(--rim);
+  border-radius: 8px;
+  transition: border-color 0.2s;
+}
+.action-item:hover { border-color: var(--rim2); }
+.action-num {
+  width: 22px; height: 22px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px; font-weight: 500; color: #000;
+  flex-shrink: 0;
+  background: var(--amber);
+}
+.action-text { font-size: 12.5px; line-height: 1.6; color: var(--text); flex: 1; }
+
+/* Summary */
+.summary-text {
+  font-size: 12.5px; line-height: 1.75;
+  color: var(--text-mid);
+  background: var(--surface);
+  border: 1px solid var(--rim);
+  border-radius: 8px;
+  padding: 12px 14px;
+  font-family: 'Cormorant Garamond', serif;
+  font-style: italic; font-size: 14px;
+}
+
+/* Action buttons */
+.out-actions {
+  display: flex; flex-direction: column; gap: 8px;
+  padding: 16px;
+}
+.out-btn {
+  width: 100%; padding: 11px;
+  border-radius: 8px;
+  font-family: 'Syne', sans-serif;
+  font-size: 12px; font-weight: 600;
+  cursor: pointer; letter-spacing: 0.04em;
+  transition: all 0.2s; border: 1px solid;
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+}
+.out-btn-wa {
+  background: rgba(37,211,102,0.1);
+  border-color: rgba(37,211,102,0.3);
+  color: #25d366;
+}
+.out-btn-wa:hover { background: rgba(37,211,102,0.18); border-color: rgba(37,211,102,0.5); }
+.out-btn-copy {
+  background: rgba(232,160,32,0.08);
+  border-color: rgba(232,160,32,0.25);
+  color: var(--amber2);
+}
+.out-btn-copy:hover { background: rgba(232,160,32,0.14); border-color: rgba(232,160,32,0.4); }
+.out-btn-new {
+  background: var(--surface);
+  border-color: var(--rim2);
+  color: var(--text-mid);
+}
+.out-btn-new:hover { border-color: var(--text-dim); color: var(--text); }
+
+/* speech bubbles */
+.sb { opacity:0; transition: opacity 0.3s; }
+.sb.vis { opacity:1; animation: sbPop 0.7s infinite alternate; }
+@keyframes sbPop { from{transform:scale(1)} to{transform:scale(1.25)} }
+</style>
+</head>
+<body>
+
+<canvas id="particleCanvas"></canvas>
+
+<!-- ══ SCREEN 1: ONBOARDING ══ -->
+<div class="screen active" id="screenOnboard">
+
+  <!-- LEFT: Brand Manifesto -->
+  <div class="onboard-left">
+    <div class="brand-mark">
+      <div class="brand-hex">
+        <div class="brand-hex-inner">💼</div>
+      </div>
+      <div>
+        <div class="brand-wordmark">Warung Pintar</div>
+        <div class="brand-tagline">AI Advisory Board · Indonesia</div>
+      </div>
+    </div>
+
+    <div class="manifesto-title">
+      Tim advisor<br>
+      <em>terbaik</em><br>
+      untuk UMKM-mu.
+    </div>
+
+    <div class="manifesto-body">
+      5 advisor AI dengan spesialisasi berbeda akan berdiskusi bersama tentang tantangan bisnis Anda — memberikan perspektif yang komprehensif, bukan jawaban generik.
+    </div>
+
+    <div class="advisor-pills">
+      <div class="advisor-pill">
+        <div class="pill-dot" style="background:#e8a020;"></div>
+        <span class="pill-name">Rina Kusuma</span>
+        <span class="pill-role">Bisnis & Strategi</span>
+      </div>
+      <div class="advisor-pill">
+        <div class="pill-dot" style="background:#4090e8;"></div>
+        <span class="pill-name">Dika Pratama</span>
+        <span class="pill-role">Digital Marketing</span>
+      </div>
+      <div class="advisor-pill">
+        <div class="pill-dot" style="background:#20c8a0;"></div>
+        <span class="pill-name">Pak Hendra</span>
+        <span class="pill-role">Keuangan & Modal</span>
+      </div>
+      <div class="advisor-pill">
+        <div class="pill-dot" style="background:#ff6030;"></div>
+        <span class="pill-name">Tari Santoso</span>
+        <span class="pill-role">Ops & Automation</span>
+      </div>
+      <div class="advisor-pill">
+        <div class="pill-dot" style="background:#9060e8;"></div>
+        <span class="pill-name">Mas Budi</span>
+        <span class="pill-role">Mindset & Growth</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- RIGHT: Profile Form -->
+  <div class="onboard-right">
+    <div class="form-header">
+      <div class="form-eyebrow">Langkah 1 dari 1</div>
+      <div class="form-title">Ceritakan<br><em>bisnis Anda</em></div>
+    </div>
+
+    <div class="form-grid">
+      <div class="field">
+        <label>Nama Anda</label>
+        <input type="text" id="f-nama" placeholder="cth. Budi Santoso" />
+      </div>
+      <div class="field">
+        <label>Nama Bisnis</label>
+        <input type="text" id="f-bisnis" placeholder="cth. Dapur Bu Rini" />
+      </div>
+      <div class="field">
+        <label>Jenis Bisnis</label>
+        <select id="f-jenis">
+          <option value="">— Pilih kategori —</option>
+          <option>F&B / Kuliner</option>
+          <option>Fashion & Pakaian</option>
+          <option>Jasa & Freelance</option>
+          <option>Reseller / Dropship</option>
+          <option>Beauty & Skincare</option>
+          <option>Toko Online (Multi-produk)</option>
+          <option>Kerajinan / Handmade</option>
+          <option>Konten Creator</option>
+          <option>Lainnya</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>Omzet Per Bulan</label>
+        <select id="f-omzet">
+          <option value="">— Pilih range —</option>
+          <option>Belum ada / baru mulai</option>
+          <option>Di bawah Rp 5 juta</option>
+          <option>Rp 5 – 20 juta</option>
+          <option>Rp 20 – 50 juta</option>
+          <option>Rp 50 – 150 juta</option>
+          <option>Di atas Rp 150 juta</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>Sudah Berjalan</label>
+        <select id="f-durasi">
+          <option value="">— Pilih —</option>
+          <option>Baru mulai / ide</option>
+          <option>1 – 6 bulan</option>
+          <option>6 bulan – 1 tahun</option>
+          <option>1 – 3 tahun</option>
+          <option>Lebih dari 3 tahun</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>Platform Utama</label>
+        <select id="f-platform">
+          <option value="">— Pilih —</option>
+          <option>Instagram</option>
+          <option>TikTok / TikTok Shop</option>
+          <option>WhatsApp / WA Business</option>
+          <option>Tokopedia / Shopee</option>
+          <option>Website / Toko Online</option>
+          <option>Offline / Walk-in</option>
+          <option>Belum ada platform</option>
+        </select>
+      </div>
+      <div class="field form-full">
+        <label>Tantangan Terbesar Saat Ini (opsional)</label>
+        <textarea id="f-tantangan" rows="2" placeholder="cth. Penjualan stagnan 3 bulan, tidak tahu harus mulai dari mana..."></textarea>
+      </div>
+      <div class="field form-full">
+        <label>Groq API Key</label>
+        <div class="api-field">
+          <input type="password" id="f-apikey" placeholder="gsk_xxxxxxxxxxxxxxxxxxxx" autocomplete="off" />
+          <div class="api-status" id="apiStatusIcon">🔑</div>
+        </div>
+        <div class="groq-hint">Dapatkan gratis di <a href="https://console.groq.com" target="_blank">console.groq.com</a> · Model: llama-3.3-70b-versatile</div>
+      </div>
+    </div>
+
+    <button class="btn-enter" id="btnEnter" onclick="enterDashboard()">
+      Mulai Konsultasi →
+    </button>
+  </div>
+</div>
+
+<!-- ══ SCREEN 2: MAIN ADVISORY ══ -->
+<div class="screen" id="screenMain">
+
+  <!-- TOPBAR -->
+  <div class="topbar">
+    <div class="tb-brand">💼 <span>Warung Pintar</span></div>
+    <div class="tb-profile" id="tbProfile">
+      <span>👤</span>
+      <span class="tb-profile-name" id="tbName">—</span>
+      <span id="tbBisnis" style="color:var(--text-dim);">—</span>
+    </div>
+    <div class="tb-spacer"></div>
+    <div class="tb-model">llama-3.3-70b · groq</div>
+    <div class="live-pill" id="livePill">
+      <div class="live-dot" id="liveDot"></div>
+      <span id="liveText">STANDBY</span>
+    </div>
+  </div>
+
+  <!-- WORKSPACE -->
+  <div class="workspace">
+
+    <!-- LEFT: Advisors -->
+    <div class="panel-advisors">
+      <div class="panel-head">Para Advisor</div>
+      <div class="scene-wrap">
+        <div class="scene-bg"></div>
+        <svg class="scene-svg" viewBox="0 0 280 220" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <pattern id="pg" patternUnits="userSpaceOnUse" width="18" height="9">
+              <path d="M0,4.5 L9,0 L18,4.5 L9,9 Z" fill="none" stroke="#1a2840" stroke-width="0.5"/>
+            </pattern>
+            <radialGradient id="gGold" cx="50%" cy="50%" r="50%">
+              <stop offset="0%" stop-color="#e8a020" stop-opacity="0.07"/>
+              <stop offset="100%" stop-color="#e8a020" stop-opacity="0"/>
+            </radialGradient>
+            <filter id="gf">
+              <feGaussianBlur stdDeviation="3.5" result="b"/>
+              <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+            </filter>
+          </defs>
+
+          <!-- Floor -->
+          <polygon points="140,16 270,86 140,156 10,86" fill="#060a12" stroke="#1a2840" stroke-width="1.2"/>
+          <polygon points="140,16 270,86 140,156 10,86" fill="url(#pg)" opacity="0.9"/>
+          <ellipse cx="140" cy="86" rx="85" ry="38" fill="url(#gGold)"/>
+
+          <!-- Walls -->
+          <polygon points="10,86 140,156 140,192 10,122" fill="#04080f" stroke="#1a2840" stroke-width="0.8"/>
+          <polygon points="270,86 140,156 140,192 270,122" fill="#060a14" stroke="#1a2840" stroke-width="0.8"/>
+
+          <!-- Gold trim -->
+          <line x1="10" y1="86" x2="140" y2="16" stroke="#e8a020" stroke-width="0.5" opacity="0.2"/>
+          <line x1="270" y1="86" x2="140" y2="16" stroke="#e8a020" stroke-width="0.5" opacity="0.2"/>
+          <line x1="10" y1="86" x2="140" y2="156" stroke="#e8a020" stroke-width="0.3" opacity="0.1"/>
+          <line x1="270" y1="86" x2="140" y2="156" stroke="#e8a020" stroke-width="0.3" opacity="0.1"/>
+
+          <!-- DESKS -->
+          <!-- Rina center top -->
+          <g transform="translate(140,44)">
+            <polygon points="0,-14 26,0 0,14 -26,0" fill="#0f1828" stroke="#1a2840" stroke-width="1"/>
+            <polygon points="-26,0 0,14 0,22 -26,8" fill="#0c1420" stroke="#1a2840" stroke-width="0.6"/>
+            <polygon points="26,0 0,14 0,22 26,8" fill="#0e1624" stroke="#1a2840" stroke-width="0.6"/>
+            <rect x="-8" y="-19" width="16" height="10" rx="1.5" fill="#080f1a" stroke="#e8a020" stroke-width="0.6" opacity="0.7"/>
+            <rect x="-6" y="-17" width="12" height="7" fill="#040a14"/>
+            <rect x="-6" y="-17" width="12" height="7" fill="#e8a020" opacity="0.04"/>
+          </g>
+
+          <!-- Dika left -->
+          <g transform="translate(72,96)">
+            <polygon points="0,-12 22,0 0,12 -22,0" fill="#0f1828" stroke="#1a2840" stroke-width="1"/>
+            <polygon points="-22,0 0,12 0,19 -22,7" fill="#0c1420" stroke="#1a2840" stroke-width="0.6"/>
+            <polygon points="22,0 0,12 0,19 22,7" fill="#0e1624" stroke="#1a2840" stroke-width="0.6"/>
+            <rect x="-7" y="-16" width="14" height="9" rx="1.5" fill="#080f1a" stroke="#4090e8" stroke-width="0.6" opacity="0.7"/>
+            <rect x="-5" y="-14" width="10" height="6" fill="#040a14"/>
+          </g>
+
+          <!-- Pak Hendra right -->
+          <g transform="translate(208,96)">
+            <polygon points="0,-12 22,0 0,12 -22,0" fill="#0f1828" stroke="#1a2840" stroke-width="1"/>
+            <polygon points="-22,0 0,12 0,19 -22,7" fill="#0c1420" stroke="#1a2840" stroke-width="0.6"/>
+            <polygon points="22,0 0,12 0,19 22,7" fill="#0e1624" stroke="#1a2840" stroke-width="0.6"/>
+            <rect x="-7" y="-16" width="14" height="9" rx="1.5" fill="#080f1a" stroke="#20c8a0" stroke-width="0.6" opacity="0.7"/>
+            <rect x="-5" y="-14" width="10" height="6" fill="#040a14"/>
+          </g>
+
+          <!-- Tari lower left -->
+          <g transform="translate(104,130)">
+            <polygon points="0,-12 22,0 0,12 -22,0" fill="#0f1828" stroke="#1a2840" stroke-width="1"/>
+            <polygon points="-22,0 0,12 0,19 -22,7" fill="#0c1420" stroke="#1a2840" stroke-width="0.6"/>
+            <polygon points="22,0 0,12 0,19 22,7" fill="#0e1624" stroke="#1a2840" stroke-width="0.6"/>
+            <rect x="-7" y="-16" width="14" height="9" rx="1.5" fill="#080f1a" stroke="#ff6030" stroke-width="0.6" opacity="0.7"/>
+            <rect x="-5" y="-14" width="10" height="6" fill="#040a14"/>
+          </g>
+
+          <!-- Mas Budi lower right -->
+          <g transform="translate(176,130)">
+            <polygon points="0,-12 22,0 0,12 -22,0" fill="#0f1828" stroke="#1a2840" stroke-width="1"/>
+            <polygon points="-22,0 0,12 0,19 -22,7" fill="#0c1420" stroke="#1a2840" stroke-width="0.6"/>
+            <polygon points="22,0 0,12 0,19 22,7" fill="#0e1624" stroke="#1a2840" stroke-width="0.6"/>
+            <rect x="-7" y="-16" width="14" height="9" rx="1.5" fill="#080f1a" stroke="#9060e8" stroke-width="0.6" opacity="0.7"/>
+            <rect x="-5" y="-14" width="10" height="6" fill="#040a14"/>
+          </g>
+
+          <!-- AVATARS -->
+          <g id="av-bisnis">
+            <circle cx="140" cy="26" r="12" fill="#e8a020" stroke="#f5c050" stroke-width="1"/>
+            <text x="140" y="30" text-anchor="middle" font-family="JetBrains Mono" font-size="7.5" font-weight="500" fill="#000">RI</text>
+            <circle id="sb-bisnis" class="sb" cx="151" cy="16" r="5" fill="#f5c050"/>
+            <text id="sbt-bisnis" class="sb" x="151" y="19.5" text-anchor="middle" font-family="JetBrains Mono" font-size="5" fill="#000">!</text>
+          </g>
+          <g id="av-marketing">
+            <circle cx="72" cy="78" r="11" fill="#4090e8" stroke="#70b0f8" stroke-width="1"/>
+            <text x="72" y="82" text-anchor="middle" font-family="JetBrains Mono" font-size="7.5" font-weight="500" fill="#000">DI</text>
+            <circle id="sb-marketing" class="sb" cx="82" cy="68" r="5" fill="#f5c050"/>
+            <text id="sbt-marketing" class="sb" x="82" y="71.5" text-anchor="middle" font-family="JetBrains Mono" font-size="5" fill="#000">!</text>
+          </g>
+          <g id="av-keuangan">
+            <circle cx="208" cy="78" r="11" fill="#20c8a0" stroke="#50e0b8" stroke-width="1"/>
+            <text x="208" y="82" text-anchor="middle" font-family="JetBrains Mono" font-size="7.5" font-weight="500" fill="#000">HE</text>
+            <circle id="sb-keuangan" class="sb" cx="218" cy="68" r="5" fill="#f5c050"/>
+            <text id="sbt-keuangan" class="sb" x="218" y="71.5" text-anchor="middle" font-family="JetBrains Mono" font-size="5" fill="#000">!</text>
+          </g>
+          <g id="av-ops">
+            <circle cx="104" cy="113" r="11" fill="#ff6030" stroke="#ff8860" stroke-width="1"/>
+            <text x="104" y="117" text-anchor="middle" font-family="JetBrains Mono" font-size="7.5" font-weight="500" fill="#000">TA</text>
+            <circle id="sb-ops" class="sb" cx="114" cy="103" r="5" fill="#f5c050"/>
+            <text id="sbt-ops" class="sb" x="114" y="106.5" text-anchor="middle" font-family="JetBrains Mono" font-size="5" fill="#000">!</text>
+          </g>
+          <g id="av-mindset">
+            <circle cx="176" cy="113" r="11" fill="#9060e8" stroke="#b080f8" stroke-width="1"/>
+            <text x="176" y="117" text-anchor="middle" font-family="JetBrains Mono" font-size="7.5" font-weight="500" fill="#000">BU</text>
+            <circle id="sb-mindset" class="sb" cx="186" cy="103" r="5" fill="#f5c050"/>
+            <text id="sbt-mindset" class="sb" x="186" y="106.5" text-anchor="middle" font-family="JetBrains Mono" font-size="5" fill="#000">!</text>
+          </g>
+        </svg>
+      </div>
+
+      <div class="adv-rows" id="advRows"></div>
+    </div>
+
+    <!-- CENTER: Chat -->
+    <div class="panel-chat">
+      <div class="chat-topbar">
+        <div class="chat-topic-label">TOPIK: <span id="topicDisplay">—</span></div>
+      </div>
+
+      <div class="chat-feed" id="chatFeed">
+        <div class="empty-state" id="emptyState">
+          <div class="empty-glyphs">
+            <div class="eg" style="background:#e8a020;">RI</div>
+            <div class="eg" style="background:#4090e8;">DI</div>
+            <div class="eg" style="background:#20c8a0;">HE</div>
+            <div class="eg" style="background:#ff6030;">TA</div>
+            <div class="eg" style="background:#9060e8;">BU</div>
+          </div>
+          <div class="empty-t1">Advisory Board Siap</div>
+          <div class="empty-t2">Pilih topik atau masukkan tantangan bisnis Anda. 5 advisor akan berdiskusi memberikan perspektif dari sudut masing-masing.</div>
+        </div>
+      </div>
+
+      <div class="chat-bottom">
+        <div class="presets-scroll" id="presetScroll"></div>
+        <div class="input-bar">
+          <input type="text" class="main-input" id="mainInput"
+            placeholder="Ceritakan masalah bisnis Anda..." />
+          <button class="btn-consult" id="btnConsult" onclick="startConsult()">▶ Konsultasi</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- RIGHT: Output Panel -->
+    <div class="panel-output">
+      <div class="panel-head">Hasil Sesi</div>
+
+      <div class="output-empty" id="outputEmpty">
+        <div class="output-empty-icon">📋</div>
+        <div class="output-empty-t">Action plan dan ringkasan akan muncul setelah sesi selesai.</div>
+      </div>
+
+      <div class="output-result" id="outputResult">
+        <div class="out-section">
+          <div class="out-label">Action Plan</div>
+          <div class="action-plan" id="actionPlan"></div>
+        </div>
+        <div class="out-section">
+          <div class="out-label">Rangkuman Sesi</div>
+          <div class="summary-text" id="summaryText"></div>
+        </div>
+        <div class="out-actions">
+          <button class="out-btn out-btn-wa" id="btnWA" onclick="shareWA()">
+            📱 Share ke WhatsApp
+          </button>
+          <button class="out-btn out-btn-copy" id="btnCopy" onclick="copyResult()">
+            📄 Copy Ringkasan
+          </button>
+          <button class="out-btn out-btn-new" onclick="newSession()">
+            ↺ Sesi Baru
+          </button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+// ══════════════════════════════════════
+//   PARTICLES
+// ══════════════════════════════════════
+const canvas = document.getElementById('particleCanvas');
+const ctx = canvas.getContext('2d');
+let W, H, particles = [];
+
+function resizeCanvas() {
+  W = canvas.width = window.innerWidth;
+  H = canvas.height = window.innerHeight;
+}
+
+function createParticles() {
+  particles = [];
+  const count = Math.floor(W * H / 14000);
+  for (let i = 0; i < count; i++) {
+    particles.push({
+      x: Math.random() * W,
+      y: Math.random() * H,
+      r: Math.random() * 1.4 + 0.3,
+      vx: (Math.random() - 0.5) * 0.18,
+      vy: (Math.random() - 0.5) * 0.18,
+      alpha: Math.random() * 0.4 + 0.05,
+      color: Math.random() > 0.85 ? '#e8a020' : (Math.random() > 0.7 ? '#4090e8' : '#c8d8f0')
+    });
+  }
+}
+
+function animParticles() {
+  ctx.clearRect(0, 0, W, H);
+  particles.forEach(p => {
+    p.x += p.vx; p.y += p.vy;
+    if (p.x < 0) p.x = W; if (p.x > W) p.x = 0;
+    if (p.y < 0) p.y = H; if (p.y > H) p.y = 0;
+    ctx.beginPath();
+    ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+    ctx.fillStyle = p.color;
+    ctx.globalAlpha = p.alpha;
+    ctx.fill();
+  });
+  ctx.globalAlpha = 1;
+
+  // Draw faint connections
+  for (let i = 0; i < particles.length; i++) {
+    for (let j = i + 1; j < particles.length; j++) {
+      const dx = particles[i].x - particles[j].x;
+      const dy = particles[i].y - particles[j].y;
+      const dist = Math.sqrt(dx*dx + dy*dy);
+      if (dist < 90) {
+        ctx.beginPath();
+        ctx.moveTo(particles[i].x, particles[i].y);
+        ctx.lineTo(particles[j].x, particles[j].y);
+        ctx.strokeStyle = '#e8a020';
+        ctx.globalAlpha = (1 - dist / 90) * 0.04;
+        ctx.lineWidth = 0.5;
+        ctx.stroke();
+        ctx.globalAlpha = 1;
+      }
+    }
+  }
+  requestAnimationFrame(animParticles);
+}
+
+resizeCanvas(); createParticles(); animParticles();
+window.addEventListener('resize', () => { resizeCanvas(); createParticles(); });
+
+// ══════════════════════════════════════
+//   ADVISORS DATA
+// ══════════════════════════════════════
+const ADVISORS = [
+  {
+    id: 'bisnis', name: 'Rina Kusuma', role: 'Konsultan Bisnis & Strategi',
+    short: 'Strategi', color: '#e8a020', init: 'RI',
+    system: `Kamu adalah Rina Kusuma, Konsultan Bisnis & Strategi berpengalaman 12 tahun yang fokus mendampingi solopreneur dan UMKM Indonesia.
+
+Keahlianmu: validasi ide bisnis, positioning produk, penetapan harga (pricing strategy), riset kompetitor, pivot bisnis, model bisnis kanvas, scaling dari nol ke konsisten.
+Datamu: 63% UMKM Indonesia gagal di 2 tahun pertama karena lemah di strategi. Kamu paham konteks warung, toko online, jasa freelance, hingga F&B rumahan di Indonesia.
+Karaktermu: langsung ke inti masalah, berbasis data dan pengalaman nyata, tidak jual mimpi tapi kasih jalan konkret.
+Gaya bicara: tegas, faktual, sesekali pakai analogi bisnis yang relevan konteks Indonesia.
+
+ATURAN MUTLAK:
+- Jawab HANYA dalam Bahasa Indonesia natural
+- Maksimal 3 kalimat padat, tidak lebih
+- Teks mengalir, tanpa bullet points atau markdown
+- Fokus pada sudut strategi bisnis dan keputusan penting
+- Gunakan konteks profil bisnis klien yang diberikan`
+  },
+  {
+    id: 'marketing', name: 'Dika Pratama', role: 'Digital Marketing Specialist',
+    short: 'Marketing', color: '#4090e8', init: 'DI',
+    system: `Kamu adalah Dika Pratama, Digital Marketing Specialist yang fokus bantu UMKM dan solopreneur Indonesia berjualan lebih efektif online.
+
+Keahlianmu: Instagram Reels, TikTok organic & ads, WhatsApp marketing, copywriting jualan, konten viral untuk produk lokal, Meta Ads budget kecil (Rp50rb-500rb/hari), SEO dasar toko online.
+Datamu: 78% konsumen Indonesia riset produk di sosmed sebelum beli. TikTok Shop tumbuh 300% YoY. UMKM yang konsisten posting 3x seminggu rata-rata naik omzet 40% dalam 3 bulan.
+Karaktermu: kreatif, tahu tren terkini, kasih ide konten konkret bukan teori abstrak.
+Gaya bicara: energik, langsung kasih contoh hooks atau angle konten yang actionable.
+
+ATURAN MUTLAK:
+- Jawab HANYA dalam Bahasa Indonesia natural
+- Maksimal 3 kalimat padat, tidak lebih
+- Teks mengalir, tanpa bullet points atau markdown
+- Fokus pada taktik marketing digital yang bisa langsung dieksekusi
+- Gunakan konteks profil bisnis klien yang diberikan`
+  },
+  {
+    id: 'keuangan', name: 'Pak Hendra', role: 'Konsultan Keuangan UMKM',
+    short: 'Keuangan', color: '#20c8a0', init: 'HE',
+    system: `Kamu adalah Pak Hendra, Konsultan Keuangan UMKM yang sudah 15 tahun bantu pengusaha kecil Indonesia kelola uang dengan benar.
+
+Keahlianmu: pemisahan rekening pribadi-bisnis, pencatatan keuangan sederhana, cash flow management, perhitungan HPP, akses modal UMKM (KUR BRI/BNI 6% per tahun), pajak UMKM PP 55/2022, break-even analysis.
+Datamu: 82% UMKM Indonesia tidak pisahkan keuangan pribadi dan bisnis. 67% tidak tahu HPP produk sendiri. KUR 2024 bunganya 6%/tahun dan masih banyak yang belum memanfaatkan.
+Karaktermu: teliti, sabar, selalu mulai dari yang paling dasar.
+Gaya bicara: tenang, pakai angka konkret, analogi yang mudah dipahami siapapun.
+
+ATURAN MUTLAK:
+- Jawab HANYA dalam Bahasa Indonesia natural
+- Maksimal 3 kalimat padat, tidak lebih
+- Teks mengalir, tanpa bullet points atau markdown
+- Fokus pada aspek keuangan, arus kas, kesehatan finansial bisnis
+- Gunakan konteks profil bisnis klien yang diberikan`
+  },
+  {
+    id: 'ops', name: 'Tari Santoso', role: 'Ops & Automation Expert',
+    short: 'Operasional', color: '#ff6030', init: 'TA',
+    system: `Kamu adalah Tari Santoso, Ops & Automation Expert yang spesialis bantu UMKM Indonesia keluar dari chaos operasional.
+
+Keahlianmu: sistem order via WhatsApp Business (template, katalog, Quick Reply), tools gratis UMKM (Google Sheets, GoBiz, Tokopedia/Shopee dashboard), otomasi dengan Zapier/Make, invoicing digital, SOP operasional harian.
+Datamu: 71% solopreneur Indonesia masih terima order via WA pribadi tanpa sistem. Rata-rata pebisnis kecil buang 3-4 jam/hari untuk admin yang bisa diotomasi.
+Karaktermu: pragmatis, kasih solusi yang bisa dipakai hari ini, tidak suka ribet.
+Gaya bicara: to the point, sebut tools spesifik yang realistis untuk UMKM.
+
+ATURAN MUTLAK:
+- Jawab HANYA dalam Bahasa Indonesia natural
+- Maksimal 3 kalimat padat, tidak lebih
+- Teks mengalir, tanpa bullet points atau markdown
+- Fokus pada sistem, tools, cara kerja yang lebih efisien
+- Gunakan konteks profil bisnis klien yang diberikan`
+  },
+  {
+    id: 'mindset', name: 'Mas Budi', role: 'Mentor Mindset & Growth',
+    short: 'Mindset', color: '#9060e8', init: 'BU',
+    system: `Kamu adalah Mas Budi, Mentor Mindset & Growth yang sudah bantu ratusan solopreneur Indonesia melewati plateau dan burnout.
+
+Keahlianmu: mengatasi burnout solopreneur, transisi dari pekerja keras ke pemikir strategis, delegasi pertama, mindset pricing tanpa rasa bersalah, ketakutan gagal, konsistensi jangka panjang, identity shift.
+Datamu: 89% solopreneur Indonesia mengalami burnout di tahun pertama. Hambatan terbesar scaling UMKM bukan modal atau skill — tapi mindset owner. Banyak yang takut naikan harga padahal margin sudah mepet.
+Karaktermu: hangat tapi jujur, tidak basa-basi, sentuh akar masalah psikologis di balik masalah bisnis.
+Gaya bicara: empatik, sering sentuh "kenapa" di balik masalah permukaan.
+
+ATURAN MUTLAK:
+- Jawab HANYA dalam Bahasa Indonesia natural
+- Maksimal 3 kalimat padat, tidak lebih
+- Teks mengalir, tanpa bullet points atau markdown
+- Fokus pada pola pikir, mental block, sisi manusiawi dari tantangan bisnis
+- Gunakan konteks profil bisnis klien yang diberikan`
+  }
+];
+
+const PRESETS = [
+  "Omzet stagnan 3 bulan, tidak tahu harus apa",
+  "WA orderan chaos, sering kelewatan",
+  "Mau naikan harga tapi takut pelanggan kabur",
+  "Tidak bisa pisahkan uang bisnis & pribadi",
+  "Sudah posting tiap hari tapi penjualan sepi",
+  "Burnout tapi tidak bisa berhenti kerja",
+  "Mau mulai iklan Meta Ads, budget terbatas",
+  "Susah delegasi, semua harus dikerjain sendiri",
+  "Produk bagus tapi tidak tahu cara pricing",
+];
+
+// State
+let userProfile = {};
+let isRunning = false;
+let sessionHistory = [];
+let lastSummary = '';
+let lastActionPlan = [];
+let lastTopic = '';
+let apiKey = '';
+
+// ── API KEY VALIDATION ──
+document.getElementById('f-apikey').addEventListener('input', function() {
+  const val = this.value.trim();
+  const icon = document.getElementById('apiStatusIcon');
+  if (val.startsWith('gsk_') && val.length > 25) {
+    icon.textContent = '✓';
+    icon.className = 'api-status valid';
+    apiKey = val;
+  } else if (val.length > 5) {
+    icon.textContent = '✗';
+    icon.className = 'api-status invalid';
+    apiKey = '';
+  } else {
+    icon.textContent = '🔑';
+    icon.className = 'api-status';
+    apiKey = '';
+  }
+});
+
+// ── SCREEN TRANSITION ──
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+
+function enterDashboard() {
+  const nama = document.getElementById('f-nama').value.trim();
+  const bisnis = document.getElementById('f-bisnis').value.trim();
+  const jenis = document.getElementById('f-jenis').value;
+  const omzet = document.getElementById('f-omzet').value;
+  const durasi = document.getElementById('f-durasi').value;
+  const platform = document.getElementById('f-platform').value;
+  const tantangan = document.getElementById('f-tantangan').value.trim();
+  const key = document.getElementById('f-apikey').value.trim();
+
+  if (!nama || !key) {
+    if (!nama) document.getElementById('f-nama').focus();
+    else { alert('Mohon isi Groq API Key terlebih dahulu.'); document.getElementById('f-apikey').focus(); }
+    return;
+  }
+  if (!key.startsWith('gsk_') || key.length < 25) {
+    alert('Format Groq API Key tidak valid. Pastikan dimulai dengan gsk_');
+    document.getElementById('f-apikey').focus();
+    return;
+  }
+
+  apiKey = key;
+  userProfile = { nama, bisnis, jenis, omzet, durasi, platform, tantangan };
+
+  document.getElementById('tbName').textContent = nama;
+  document.getElementById('tbBisnis').textContent = bisnis || jenis || '—';
+
+  initAdvRows();
+  initPresets();
+  showScreen('screenMain');
+}
+
+// ── INIT ADVISORS ──
+function initAdvRows() {
+  const el = document.getElementById('advRows');
+  el.innerHTML = ADVISORS.map(a => `
+    <div class="adv-item" id="row-${a.id}">
+      <div class="adv-item-dot" id="dot-${a.id}" style="background:${a.color};"></div>
+      <div class="adv-av" style="background:${a.color};">
+        <div class="adv-av-ring" id="ring-${a.id}" style="border-color:${a.color};"></div>
+        ${a.init}
+      </div>
+      <div class="adv-info">
+        <div class="adv-item-name">${a.name}</div>
+        <div class="adv-item-role">${a.role}</div>
+      </div>
+      <div class="adv-item-status" id="sts-${a.id}">standby</div>
+    </div>
+  `).join('');
+}
+
+// ── PRESETS ──
+function initPresets() {
+  const el = document.getElementById('presetScroll');
+  el.innerHTML = PRESETS.map(p => `
+    <button class="preset-chip" onclick="setPreset(this)">${p}</button>
+  `).join('');
+}
+function setPreset(btn) {
+  document.getElementById('mainInput').value = btn.textContent;
+}
+
+// ── ACTIVATE ADVISOR ──
+function activate(id) {
+  ADVISORS.forEach(a => {
+    const row = document.getElementById(`row-${a.id}`);
+    if (row) row.classList.remove('speaking');
+    const sts = document.getElementById(`sts-${a.id}`);
+    if (sts) { sts.textContent = 'standby'; sts.classList.remove('on'); }
+    const sb = document.getElementById(`sb-${a.id}`);
+    const sbt = document.getElementById(`sbt-${a.id}`);
+    if (sb) sb.classList.remove('vis');
+    if (sbt) sbt.classList.remove('vis');
+    const av = document.getElementById(`av-${a.id}`);
+    if (av) av.style.filter = '';
+  });
+  if (!id) return;
+  const row = document.getElementById(`row-${id}`);
+  if (row) row.classList.add('speaking');
+  const sts = document.getElementById(`sts-${id}`);
+  if (sts) { sts.textContent = '● bicara'; sts.classList.add('on'); }
+  const sb = document.getElementById(`sb-${id}`);
+  const sbt = document.getElementById(`sbt-${id}`);
+  if (sb) sb.classList.add('vis');
+  if (sbt) sbt.classList.add('vis');
+  const agent = ADVISORS.find(a => a.id === id);
+  const av = document.getElementById(`av-${id}`);
+  if (av && agent) av.style.filter = `drop-shadow(0 0 12px ${agent.color}90)`;
+}
+
+// ── CHAT HELPERS ──
+function addSys(text, hl = false) {
+  const feed = document.getElementById('chatFeed');
+  const el = document.createElement('div');
+  el.className = 'sys-msg' + (hl ? ' hl' : '');
+  el.textContent = text;
+  feed.appendChild(el);
+  feed.scrollTop = feed.scrollHeight;
+}
+
+function showTyping(adv) {
+  const feed = document.getElementById('chatFeed');
+  const el = document.createElement('div');
+  el.className = 'typing-msg'; el.id = 'typing';
+  el.innerHTML = `
+    <div class="msg-av" style="background:${adv.color};">${adv.init}</div>
+    <div style="display:flex;align-items:center;">
+      <div class="typing-bubble">
+        <div class="t-dot" style="background:${adv.color};"></div>
+        <div class="t-dot" style="background:${adv.color};"></div>
+        <div class="t-dot" style="background:${adv.color};"></div>
+      </div>
+      <span class="typing-lbl">${adv.name} sedang menganalisa...</span>
+    </div>
+  `;
+  feed.appendChild(el);
+  feed.scrollTop = feed.scrollHeight;
+}
+function removeTyping() { document.getElementById('typing')?.remove(); }
+
+function addMsg(adv, text) {
+  const feed = document.getElementById('chatFeed');
+  const now = new Date().toLocaleTimeString('id-ID', { hour:'2-digit', minute:'2-digit' });
+  const el = document.createElement('div');
+  el.className = 'msg';
+  el.innerHTML = `
+    <div class="msg-av-wrap">
+      <div class="msg-av" style="background:${adv.color};">${adv.init}</div>
+    </div>
+    <div class="msg-body">
+      <div class="msg-meta">
+        <span class="msg-name" style="color:${adv.color};">${adv.name}</span>
+        <span class="msg-role">${adv.role}</span>
+        <span class="msg-time">${now}</span>
+      </div>
+      <div class="msg-bubble" style="border-left-color:${adv.color}40;">${text}</div>
+    </div>
+  `;
+  feed.appendChild(el);
+  feed.scrollTop = feed.scrollHeight;
+}
+
+// ── BUILD CONTEXT ──
+function buildProfileContext() {
+  const p = userProfile;
+  let ctx = '';
+  if (p.nama) ctx += `Nama klien: ${p.nama}. `;
+  if (p.bisnis) ctx += `Nama bisnis: ${p.bisnis}. `;
+  if (p.jenis) ctx += `Jenis bisnis: ${p.jenis}. `;
+  if (p.omzet) ctx += `Omzet bulanan: ${p.omzet}. `;
+  if (p.durasi) ctx += `Lama berjalan: ${p.durasi}. `;
+  if (p.platform) ctx += `Platform utama: ${p.platform}. `;
+  if (p.tantangan) ctx += `Tantangan yang sudah diketahui: ${p.tantangan}. `;
+  return ctx.trim();
+}
+
+// ── GROQ API CALL ──
+async function callAdvisor(adv, topic) {
+  const profileCtx = buildProfileContext();
+  const context = sessionHistory.length === 0
+    ? `Profil Klien: ${profileCtx}\n\nMasalah yang dikonsultasikan: "${topic}"\n\nKamu adalah advisor pertama yang merespons. Buka sesi dan berikan pandangan awal yang spesifik dari sudut keahlianmu, disesuaikan dengan profil dan konteks bisnis klien.`
+    : `Profil Klien: ${profileCtx}\n\nMasalah: "${topic}"\n\nDiskusi sejauh ini:\n${sessionHistory.map(h=>`${h.name} (${h.role}): ${h.text}`).join('\n\n')}\n\nSekarang giliran kamu. Berikan perspektif dari sudut keahlianmu, boleh merespons atau melengkapi pandangan advisor lain. Tetap spesifik ke konteks bisnis klien.`;
+
+  const res = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${apiKey}`
+    },
+    body: JSON.stringify({
+      model: 'llama-3.3-70b-versatile',
+      max_tokens: 280,
+      temperature: 0.72,
+      messages: [
+        { role: 'system', content: adv.system },
+        { role: 'user', content: context }
+      ]
+    })
+  });
+
+  if (!res.ok) {
+    const e = await res.json().catch(() => ({}));
+    throw new Error(e.error?.message || `HTTP ${res.status}`);
+  }
+  const data = await res.json();
+  return data.choices[0].message.content.trim();
+}
+
+// ── GENERATE ACTION PLAN ──
+async function generateActionPlan(topic) {
+  const profileCtx = buildProfileContext();
+  const transcript = sessionHistory.map(h => `${h.name}: ${h.text}`).join('\n\n');
+
+  const prompt = `Profil Klien: ${profileCtx}\n\nMasalah: "${topic}"\n\nDiskusi 5 advisor:\n${transcript}\n\nBerikan respons dalam format JSON yang valid berikut (tanpa teks lain, tanpa markdown):\n{"summary": "Rangkuman 2-3 kalimat dari seluruh diskusi advisor dalam Bahasa Indonesia yang natural.", "actions": ["Langkah 1 yang paling krusial untuk dilakukan segera", "Langkah 2 berikutnya", "Langkah 3 jangka menengah"]}`;
+
+  const res = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${apiKey}`
+    },
+    body: JSON.stringify({
+      model: 'llama-3.3-70b-versatile',
+      max_tokens: 500,
+      temperature: 0.5,
+      messages: [
+        {
+          role: 'system',
+          content: 'Kamu adalah synthesizer. Buat output HANYA JSON valid sesuai format yang diminta. Tidak ada teks lain, tidak ada markdown, tidak ada backtick.'
+        },
+        { role: 'user', content: prompt }
+      ]
+    })
+  });
+
+  if (!res.ok) throw new Error('Gagal generate action plan');
+  const data = await res.json();
+  let raw = data.choices[0].message.content.trim();
+  raw = raw.replace(/```json|```/g, '').trim();
+  return JSON.parse(raw);
+}
+
+const sleep = ms => new Promise(r => setTimeout(r, ms));
+
+// ── START CONSULTATION ──
+async function startConsult() {
+  if (isRunning) return;
+  const topic = document.getElementById('mainInput').value.trim();
+  if (!topic) { document.getElementById('mainInput').focus(); return; }
+
+  isRunning = true;
+  sessionHistory = [];
+  lastTopic = topic;
+
+  document.getElementById('btnConsult').disabled = true;
+  document.getElementById('btnConsult').textContent = '⏳ Berlangsung...';
+  document.getElementById('topicDisplay').textContent = topic;
+  document.getElementById('emptyState')?.remove();
+  document.getElementById('outputEmpty').style.display = 'none';
+  document.getElementById('outputResult').classList.remove('show');
+
+  const pill = document.getElementById('livePill');
+  pill.classList.add('on');
+  document.getElementById('liveDot').classList.add('on');
+  document.getElementById('liveText').textContent = 'LIVE';
+
+  document.getElementById('chatFeed').innerHTML = '';
+  addSys('— SESI KONSULTASI DIMULAI —', true);
+  await sleep(500);
+
+  for (const adv of ADVISORS) {
+    activate(adv.id);
+    await sleep(350);
+    showTyping(adv);
+    try {
+      const text = await callAdvisor(adv, topic);
+      removeTyping();
+      addMsg(adv, text);
+      sessionHistory.push({ name: adv.name, role: adv.role, text });
+    } catch (err) {
+      removeTyping();
+      addMsg(adv, `⚠ Koneksi terputus: ${err.message}`);
+    }
+    await sleep(800);
+  }
+
+  addSys('— MENGHASILKAN ACTION PLAN —');
+  activate(null);
+  await sleep(600);
+
+  try {
+    const result = await generateActionPlan(topic);
+    lastSummary = result.summary || '';
+    lastActionPlan = result.actions || [];
+
+    // Render output panel
+    const apEl = document.getElementById('actionPlan');
+    apEl.innerHTML = lastActionPlan.map((a, i) => `
+      <div class="action-item">
+        <div class="action-num">${i + 1}</div>
+        <div class="action-text">${a}</div>
+      </div>
+    `).join('');
+
+    document.getElementById('summaryText').textContent = lastSummary;
+    document.getElementById('outputResult').classList.add('show');
+  } catch (e) {
+    lastSummary = sessionHistory.map(h => `${h.name}: ${h.text}`).join('\n\n');
+    lastActionPlan = [];
+    document.getElementById('outputEmpty').style.display = 'flex';
+    document.getElementById('outputEmpty').querySelector('.output-empty-t').textContent = 'Gagal generate action plan. Coba lagi.';
+  }
+
+  addSys('— SESI SELESAI —', true);
+
+  pill.classList.remove('on');
+  document.getElementById('liveDot').classList.remove('on');
+  document.getElementById('liveText').textContent = 'STANDBY';
+  document.getElementById('btnConsult').disabled = false;
+  document.getElementById('btnConsult').textContent = '▶ Konsultasi Lagi';
+  isRunning = false;
+}
+
+// ── SHARE & COPY ──
+function shareWA() {
+  const p = userProfile;
+  let text = `*Hasil Konsultasi Warung Pintar AI*\n\n`;
+  text += `👤 ${p.nama || '—'} | ${p.bisnis || p.jenis || '—'}\n`;
+  text += `📌 Topik: ${lastTopic}\n\n`;
+  if (lastActionPlan.length > 0) {
+    text += `*Action Plan:*\n`;
+    lastActionPlan.forEach((a, i) => { text += `${i+1}. ${a}\n`; });
+    text += '\n';
+  }
+  if (lastSummary) {
+    text += `*Rangkuman:*\n${lastSummary}\n\n`;
+  }
+  text += `_Dihasilkan oleh Warung Pintar · AI Advisory Board_`;
+  const encoded = encodeURIComponent(text);
+  window.open(`https://wa.me/?text=${encoded}`, '_blank');
+}
+
+function copyResult() {
+  const p = userProfile;
+  let text = `HASIL KONSULTASI — WARUNG PINTAR AI\n\n`;
+  text += `Klien: ${p.nama || '—'} (${p.bisnis || p.jenis || '—'})\n`;
+  text += `Topik: ${lastTopic}\n\n`;
+  if (lastActionPlan.length > 0) {
+    text += `ACTION PLAN:\n`;
+    lastActionPlan.forEach((a, i) => { text += `${i+1}. ${a}\n`; });
+    text += '\n';
+  }
+  if (lastSummary) text += `RANGKUMAN:\n${lastSummary}\n\n`;
+  text += `Transcript:\n`;
+  sessionHistory.forEach(h => { text += `\n${h.name} (${h.role}):\n${h.text}\n`; });
+
+  navigator.clipboard.writeText(text).then(() => {
+    const btn = document.getElementById('btnCopy');
+    btn.textContent = '✓ Tersalin!';
+    setTimeout(() => { btn.innerHTML = '📄 Copy Ringkasan'; }, 2000);
+  });
+}
+
+function newSession() {
+  document.getElementById('mainInput').value = '';
+  document.getElementById('topicDisplay').textContent = '—';
+  document.getElementById('chatFeed').innerHTML = `
+    <div class="empty-state" id="emptyState">
+      <div class="empty-glyphs">
+        <div class="eg" style="background:#e8a020;">RI</div>
+        <div class="eg" style="background:#4090e8;">DI</div>
+        <div class="eg" style="background:#20c8a0;">HE</div>
+        <div class="eg" style="background:#ff6030;">TA</div>
+        <div class="eg" style="background:#9060e8;">BU</div>
+      </div>
+      <div class="empty-t1">Advisory Board Siap</div>
+      <div class="empty-t2">Pilih topik atau masukkan tantangan bisnis Anda. 5 advisor akan berdiskusi memberikan perspektif dari sudut masing-masing.</div>
+    </div>
+  `;
+  document.getElementById('outputResult').classList.remove('show');
+  document.getElementById('outputEmpty').style.display = 'flex';
+  document.getElementById('outputEmpty').querySelector('.output-empty-t').textContent = 'Action plan dan ringkasan akan muncul setelah sesi selesai.';
+  sessionHistory = [];
+  lastSummary = '';
+  lastActionPlan = [];
+  lastTopic = '';
+  activate(null);
+}
+
+// Enter key
+document.getElementById('mainInput')?.addEventListener('keypress', e => {
+  if (e.key === 'Enter' && !isRunning) startConsult();
+});
+</script>
+</body>
+</html>
